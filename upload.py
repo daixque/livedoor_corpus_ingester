@@ -13,8 +13,11 @@ ES_CLOUD_ID = os.getenv('ES_CLOUD_ID')
 ES_API_KEY = os.getenv('ES_API_KEY')
 es_client = Elasticsearch(
     cloud_id=ES_CLOUD_ID,
-    api_key=ES_API_KEY
+    api_key=ES_API_KEY,
+    request_timeout=60,
 )
+
+BULK_SIZE = int(os.getenv('BULK_SIZE', 100))
 
 # Read the corpus from the file
 # Directory structure of the file:
@@ -62,9 +65,20 @@ def upload_corpus(corpus_name, corpus):
     success_count = 0
     error_count = 0
     error_docs = []
-    for success, info in streaming_bulk(es_client, gendata(), request_timeout=600, raise_on_error=False):
+    total = len(corpus)
+
+    print(f'Uploading {total} documents to the Elasticsearch server')
+
+    for success, info in streaming_bulk(
+        es_client,
+        gendata(),
+        chunk_size=BULK_SIZE,
+        raise_on_error=False
+    ):
         if success:
             success_count += 1
+            if success_count % BULK_SIZE == 0:
+                print(f'{success_count} / {total} documents uploaded')
         else:
             error_count += 1
             error_docs.append(info['index']['_id'])
