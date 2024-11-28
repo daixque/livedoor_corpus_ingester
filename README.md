@@ -1,6 +1,6 @@
 # Livedoor corpus upload tool for Elasticsearch
 
-A Utility tool to ingest the corpus data of Livedoor news which is published by Rondhuit. Refer to the URL below to know the details of the data:
+A Utility tool to ingest the corpus data of Livedoor news articles which is published by Rondhuit. Refer to the URL below to know the details of the data:
 
 https://www.rondhuit.com/download.html
 
@@ -57,7 +57,7 @@ Copy `env.sample` file to `.env` and set the `ES_CLOUD_ID` and `ES_API_KEY`.
 Run the `upload.py` with corpus name:
 
 ```
-$ python upload.py smax
+$ python upload.py {corpus_name}
 ```
 
 Available corpus names are:
@@ -71,3 +71,21 @@ Available corpus names are:
 - smax
 - sports-watch
 - topic-news
+
+# Data structure
+
+The data is ingested into the index name as:
+
+```
+livedoor_corpus_{corpus_name}
+```
+
+Each document has following fields:
+
+  - id: Document ID
+  - url: URL of the article
+  - date: Published date
+  - title: Title of the article
+  - content: Content of the article
+
+You can find sample index template definition in the `index` directory of this repository.
