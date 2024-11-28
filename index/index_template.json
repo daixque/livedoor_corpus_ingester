@@ -1,0 +1,53 @@
+PUT _index_template/livedoor_corpus_template
+{
+    "index_patterns": [
+      "livedoor_corpus_*"
+    ],
+    "template": {
+      "mappings": {
+        "properties": {
+          "date": {
+            "type": "date"
+          },
+          "id": {
+            "type": "keyword"
+          },
+          "content": {
+            "type": "text",
+            "analyzer": "kuromoji",
+            "copy_to": "content_semantic"
+          },
+          "content_semantic": {
+            "type": "semantic_text",
+            "inference_id": "my-e5-endpoint"
+          },
+          "title": {
+            "type": "text",
+            "analyzer": "kuromoji",
+            "copy_to": "title_semantic"
+          },
+          "title_semantic": {
+            "type": "semantic_text",
+            "inference_id": "my-e5-endpoint"
+          },
+          "url": {
+            "type": "keyword",
+            "ignore_above": 1024
+          }
+        }
+      },
+      "settings": {
+        "index": {
+          "routing": {
+            "allocation": {
+              "include": {
+                "_tier_preference": "data_content"
+              }
+            }
+          },
+          "number_of_shards": "1",
+          "number_of_replicas": "1"
+        }
+      }
+    }
+  }
